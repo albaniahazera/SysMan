@@ -1,0 +1,140 @@
+<div>
+	<nav>
+		<h1>SysMan - Setup</h1>
+	</nav>
+	<main>
+		<div class="welcome-container">
+			<h2>Welcome To SysMan Setup</h2>
+			<p>Please enter data server, like IP address and Port</p>
+		</div>
+		<form id="setup-form">
+			<label for="ip">IP Address</label>
+			<input type="text" name="ip" id="ip" placeholder="127.0.0.1" required>
+			<br>
+			<label for="port">API Port</label>
+			<input type="text" name="port" id="port" placeholder="3000" required>
+			<br>
+			<label for="api-key">API Key</label>
+			<input type="text" name="api-key" id="api-key" placeholder="abc23142s" required> 
+			<br>
+			<div class="button-container">
+				<button type="submit">Done</button>
+			</div>
+		</form>
+	</main>
+</div>
+
+<script>
+	const form = document.getElementById('setup-form');
+	const default_port = 3000;
+	const stored_ip = localStorage.getItem('sysman_api_ip');
+	const stored_port = localStorage.getItem('sysman_api_port') || default_port;
+	const api_key = localStorage.getItem('sysman_api_key');
+
+	(document.getElementById('ip') as HTMLInputElement).value = stored_ip || '';
+	(document.getElementById('port') as HTMLInputElement).value = String(stored_port) || '';
+	(document.getElementById('api-key') as HTMLInputElement).value = api_key || '';
+
+	form?.addEventListener('submit', async (event) => {
+		event.preventDefault();
+		const ip_input = (document.getElementById('ip') as HTMLInputElement)?.value.trim();
+		const port_input = (document.getElementById('port') as HTMLInputElement)?.value.trim();
+		const api_key_input = (document.getElementById('api-key') as HTMLInputElement)?.value.trim();
+
+		localStorage.setItem('sysman_api_ip', ip_input);
+		localStorage.setItem('sysman_api_port', port_input);
+		localStorage.setItem('sysman_api_key', api_key_input);
+		console.log(`Stored: ${ip_input}:${port_input}`);
+
+		const api_url = `http://${ip_input}:${port_input}/server/system/os`
+		const API_KEY = api_key_input;
+
+		try {
+			const response = await fetch(api_url, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'API_KEY': API_KEY
+				}
+			});
+
+			if (!response.ok) {
+				let errorMessage = "Failed to connect to the API server.";
+            
+            	if (response.status === 401 || response.status === 403) {
+                	errorMessage = "Authentication Failed. Please check the API Key.";
+            	} else if (response.status === 404) {
+                	errorMessage = `Endpoint not found. Check if the API is running at ${api_url}.`;
+            	} else {
+                	errorMessage = `API Error: Server responded with status ${response.status}.`;
+            	}
+            	alert(errorMessage);
+            	return;
+			}
+			alert("Connection successful!");
+			window.location.href = '/SysMan-Dashboard';
+		}catch (error) {
+			alert("An error occurred while trying to connect to the API server.");
+			console.log("Fetch Error: ", error);
+		}
+	});
+</script>
+
+<style>
+	* {
+		padding: 0;
+		margin: 0;
+	}
+
+	nav {
+		background: rgb(10, 15, 44);
+		color: rgb(215, 218, 223);
+		border-bottom: 1px solid whitesmoke;
+		padding: 2px;
+	}
+
+	.welcome-container {
+		margin-bottom: 20px;
+	}
+	
+	main {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+	}
+
+	form {
+		display: flex;
+		flex-direction: column;
+		gap: 2px;
+		border: 2px solid rgb(109, 112, 109);
+		padding: 8px;
+	}
+
+	input {
+		background: rgb(10, 15, 55);
+		color: white;
+		padding: 4px;
+		border: 1px solid rgb(21, 12, 12);
+	}
+
+	.button-container {
+		display: flex;
+		justify-content: center;
+	}
+
+	button {
+		background: rgb(10, 16, 60);
+		color: white;
+		border: 1px solid rgb(104, 105, 103);
+		padding: 4px;
+	}
+
+	button:hover {
+		cursor: pointer;
+		color: aquamarine;
+		background: rgb(104, 105, 103);
+		border: 1px solid rgb(10, 16, 60);
+	}
+</style>
