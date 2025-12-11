@@ -52,7 +52,6 @@ export async function get_server_status() {
         const res_code = await response.status;
         const cpu_load = raw_data.cpu_load;
         const os_distro = raw_data.os_distro;
-        const memory = raw_data.memory_usage;
         const memory_total = raw_data.memory_usage.total;
         const memory_free = raw_data.memory_usage.free;
         const memory_used = raw_data.memory_usage.used;
@@ -77,3 +76,64 @@ export async function get_server_status() {
         console.error('Error getting server status', error);
     }
 };
+
+export async function get_cpu_info() {
+    try {
+        const response = await fetch(base_url + '/server/system/cpu', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'API_KEY': api_key
+            }
+        });
+
+        if(!response.ok) {
+            throw new Error(`Server responded with status ${response.status}`);
+        }
+        const raw_data = await response.json();
+        const res_code = await response.status;
+        const manufacturer = raw_data.manufacturer;
+        const brand = raw_data.brand;
+        const speed = raw_data.speed;
+        const cores = raw_data.cores;
+        const physicalCores = raw_data.physicalCores;
+        return {
+            res_code,
+            manufacturer,
+            brand,
+            speed,
+            cores,
+            physicalCores
+        }
+    }catch (error) {
+        console.error('Error getting cpu info', error);
+    }
+};
+
+export async function get_disk_info() {
+    try {
+        const response = await fetch(base_url + '/server/system/disk', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'API_KEY': api_key
+            }
+        });
+
+        if(!response.ok) {
+            throw new Error(`Server responded with status ${response.status}`)
+        }
+        const raw_data = await response.json();
+        const res_code = response.status;
+        const main_disk = raw_data[0]
+        const disk_type = main_disk ? main_disk.type : 'N/A';
+        const disk = main_disk ? main_disk.name : 'N/A';
+        return {
+            res_code,
+            disk_type,
+            disk
+        }
+    }catch (error) {
+        console.error('Error getting disk info', error);
+    }
+}

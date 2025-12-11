@@ -67,6 +67,27 @@ export async function get_nginx_status() {
     }
 };
 
+export async function restart_nginx() {
+    try {
+        const response = await fetch(base_url + '/server/command/restart-nginx', {
+            method: 'POST',
+            headers: {
+                'Conten-Type': 'application/json',
+                'API_KEY': api_key
+            }
+        });
+        if(!response.ok) {
+            throw new Error(`Server responded with status ${response.status}`)
+        }
+        const raw_data = await response.json();
+        const res_code = await response.status;
+        const message_restart_nginx = raw_data.message;
+        return {message_restart_nginx, res_code}
+    }catch (error) {
+        console.error('Error restart nginx', error)
+    }
+};
+
 export async function get_jellyfin_status() {
     try {
         const response = await fetch(base_url + '/server/command/status-jellyfin', {
@@ -84,6 +105,27 @@ export async function get_jellyfin_status() {
         const jellyfin_status = raw_data.jellyfin_status;
         return {jellyfin_status, res_code};
     }catch (error) {
-        console.error('Error getting jellyfin status');
+        console.error('Error getting jellyfin status', error);
+    }
+};
+
+export async function restart_jellyfin() {
+    try {
+        const response = await fetch(base_url + '/server/command/restart-jellyfin', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'API_KEY': api_key
+            }
+        });
+        if(!response.ok) {
+            throw new Error(`Server responded with status ${response.status}`);
+        }
+        const raw_data = await response.json();
+        const res_code = await response.status;
+        const message_restart_jellyfin = raw_data.message;
+        return {message_restart_jellyfin, res_code};
+    }catch (error) {
+        console.error('Error restart jellyfin', error);
     }
 }
