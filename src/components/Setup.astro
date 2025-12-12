@@ -72,7 +72,7 @@
             	return;
 			}
 			alert("Connection successful!");
-			window.location.href = '/SysMan-Dashboard';
+			window.location.href = '/SysMan-Manage';
 		}catch (error) {
 			alert("An error occurred while trying to connect to the API server.");
 			console.log("Fetch Error: ", error);
@@ -86,10 +86,23 @@
 		margin: 0;
 	}
 
+	:root {
+		--backg: rgb(10, 15, 44);
+		--color: rgb(215, 218, 223);
+		--ws: whitesmoke;
+		--fb: rgb(109, 112, 109);
+		--ib: rgb(10, 15, 55);
+		--wc: white;
+		--ibr: rgb(21, 12, 12);
+		--bb: rgb(10, 16, 60);
+		--br: rgb(104, 105, 103);
+		--bch: aquamarine;
+	}
+
 	nav {
-		background: rgb(10, 15, 44);
-		color: rgb(215, 218, 223);
-		border-bottom: 1px solid whitesmoke;
+		background: var(--backg);
+		color: var(--color);
+		border-bottom: 1px solid var(--ws);
 		padding: 2px;
 	}
 
@@ -108,15 +121,15 @@
 		display: flex;
 		flex-direction: column;
 		gap: 2px;
-		border: 2px solid rgb(109, 112, 109);
+		border: 2px solid var(--fb);
 		padding: 8px;
 	}
 
 	input {
-		background: rgb(10, 15, 55);
-		color: white;
+		background: var(--ib);
+		color: var(--wc);
 		padding: 4px;
-		border: 1px solid rgb(21, 12, 12);
+		border: 1px solid var(--ibr);
 	}
 
 	.button-container {
@@ -125,16 +138,16 @@
 	}
 
 	button {
-		background: rgb(10, 16, 60);
-		color: white;
-		border: 1px solid rgb(104, 105, 103);
+		background: var(--bb);
+		color: var(--wc);
+		border: 1px solid var(--br);
 		padding: 4px;
 	}
 
 	button:hover {
 		cursor: pointer;
-		color: aquamarine;
-		background: rgb(104, 105, 103);
-		border: 1px solid rgb(10, 16, 60);
+		color: var(--bch);
+		background: var(--br);
+		border: 1px solid var(--bb);
 	}
 </style>

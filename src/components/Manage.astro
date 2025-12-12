@@ -1,10 +1,9 @@
 <div>
     <nav>
-        <h1>Dashboard</h1>
+        <h1>Manage</h1>
     </nav>
     <main>
-        <p>Welcome to your dashboard!</p>
-        <p>Here you can manage your settings, view your activity, and more.</p>
+        <p>Here you can manage your server, view server system, shutdown server or etc.</p>
         <div class="server">
             <div class="server-info">
                 <h2>Server Information</h2>
@@ -31,6 +30,7 @@
                     <button id="chk-os">Check Os Info</button>
                     <button id="chk-cpu">Check CPU Info</button>
                     <button id="chk-disk">Check Disk Info</button>
+                    <button id="chk-net">Check Network Info</button>
                 </div>
                 <div id="output-system">You can see the system output here...</div>
             </div>
@@ -41,7 +41,7 @@
 <script>
     import { get_base_url } from "../utils/api-base-url";
     import { shutdown_server, restart_server, get_nginx_status, restart_nginx, get_jellyfin_status, restart_jellyfin } from "../utils/server-command";
-    import { get_server_os_info, get_server_status, get_cpu_info, get_disk_info } from '../utils/server-system';
+    import { get_server_os_info, get_server_status, get_cpu_info, get_disk_info, get_network_info } from '../utils/server-system';
 
     const ip_display = document.getElementById('ip-address-and-port') as HTMLParagraphElement;
     const shut_btn = document.getElementById('shutdown-btn') as HTMLButtonElement;
@@ -56,6 +56,7 @@
     const rest_jell_btn = document.getElementById('restart-jellyfin-btn') as HTMLButtonElement;
     const chk_cpu_btn = document.getElementById('chk-cpu') as HTMLButtonElement;
     const chk_disk_btn = document.getElementById('chk-disk') as HTMLButtonElement;
+    const chk_net_btn = document.getElementById('chk-net') as HTMLButtonElement;
 
     ip_display.textContent = get_base_url();
     
@@ -174,7 +175,8 @@
         let {
             res_code,
             disk_type,
-            disk
+            disk,
+            disk_vendor
         } = data;
 
         if(disk_type === 'HD') {
@@ -182,8 +184,44 @@
            disk_type = type;
         }
 
-        output_div_system.textContent = `Response Code: ${res_code}\nDisk Type: ${disk_type}\nDisk: ${disk}`;
-    })
+        output_div_system.textContent = `Response Code: ${res_code}\nDisk Vendor: ${disk_vendor}\nDisk Type: ${disk_type}\nDisk: ${disk}`;
+    });
+    chk_net_btn.addEventListener('click', async () => {
+        const data = await get_network_info();
+        if (!data) return;
+
+        const network_stats = data.main_interface;
+        let output_text = `Response Code: ${data.res_code}\n--- Network Interfaces ---`;
+        const interfaces = Object.keys(network_stats);
+    
+        const wireless_key = interfaces.find(name => name.startsWith('wl'));
+
+        if (wireless_key) {
+            const wlan_data = network_stats[wireless_key];
+            output_text += `\n[ WIRELESS (${wireless_key}) ]\n`;
+            output_text += `Type: ${wlan_data.type}\n`;
+            output_text += `RX Traffic: ${wlan_data.bytes_received_MB} MB/s\n`;
+            output_text += `TX Traffic: ${wlan_data.bytes_sent_MB} MB/s\n`;
+            output_text += `Packets RX: ${wlan_data.packets_received.toFixed(0)} p/s\n`;
+        } else {
+            output_text += `\n[ WIRELESS ]\nStatus: Not found or inactive.\n`;
+        }
+
+        const ethernet_key = interfaces.find(name => name.startsWith('en'));
+
+        if (ethernet_key) {
+            const eth_data = network_stats[ethernet_key];
+            output_text += `\n[ ETHERNET (${ethernet_key}) ]\n`;
+            output_text += `Type: ${eth_data.type}\n`;
+            output_text += `RX Traffic: ${eth_data.bytes_received_MB} MB/s\n`;
+            output_text += `TX Traffic: ${eth_data.bytes_sent_MB} MB/s\n`;
+            output_text += `Packets RX: ${eth_data.packets_received.toFixed(0)} p/s\n`;
+        } else {
+            output_text += `\n[ ETHERNET ]\nStatus: Not found or inactive.\n`;
+        }
+
+        output_div_system.textContent = output_text;
+    });
 </script>
 
 <style>
@@ -192,10 +230,22 @@
         margin: 0;
     }
 
+    :root {
+        --backg: rgb(10, 15, 44);
+        --color: rgb(215, 218, 223);
+        --sss: rgb(21, 24, 34);
+        --ws: whitesmoke;
+        --btn: rgb(10, 16, 60);
+        --bc: white;
+        --bb: rgb(104, 105, 103);
+        --bch: aquamarine;
+        --ob: rgb(10, 15, 44);
+    }
+
     nav {
-        background: rgb(10, 15, 44);
-        color: rgb(215, 218, 223);
-        border-bottom: 1px solid whitesmoke;
+        background: var(--backg);
+        color: var(--color);
+        border-bottom: 1px solid var(--ws);
         padding: 2px;
         display: flex;
         justify-content: space-between;
@@ -204,7 +254,7 @@
 
     main {
         padding: 16px;
-        color: rgb(215, 218, 223);
+        color: var(--color);
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -220,8 +270,8 @@
 
     .server-info {
         margin-top: 16px;
-        background: rgb(21, 24, 34);
-        border: 1px solid whitesmoke;
+        background: var(--sss);
+        border: 1px solid var(--ws);
         padding: 12px;
         display: flex;
         flex-direction: column;
@@ -233,7 +283,7 @@
         display: block;
         width: 100%;
         height: 1px;
-        background: whitesmoke;
+        background: var(--ws);
         margin-top: 4px;
     }
 
@@ -243,8 +293,8 @@
     }
 
     .server-commands, .server-system {
-        background: rgb(21, 24, 34);
-        border: 1px solid whitesmoke;
+        background: var(--sss);
+        border: 1px solid var(--ws);
         padding: 12px;
         display: flex;
         flex-direction: column;
@@ -253,23 +303,23 @@
     }
 
     button {
-		background: rgb(10, 16, 60);
-		color: white;
-		border: 1px solid rgb(104, 105, 103);
+		background: var(--btn);
+		color: var(--bc);
+		border: 1px solid var(--bb);
 		padding: 4px;
         margin: 2px 0;
 	}
 
 	button:hover {
 		cursor: pointer;
-		color: aquamarine;
-		background: rgb(104, 105, 103);
-		border: 1px solid rgb(10, 16, 60);
+		color: var(--bch);
+		background: var(--bb);
+		border: 1px solid var(--btn);
 	}
 
     #output-command, #output-system {
-        background: rgb(10, 15, 44);
-        border: 1px solid whitesmoke;
+        background: var(--ob);
+        border: 1px solid var(--ws);
         padding: 8px;
         margin-top: 8px;
         height: 100px;

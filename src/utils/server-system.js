@@ -128,12 +128,40 @@ export async function get_disk_info() {
         const main_disk = raw_data[0]
         const disk_type = main_disk ? main_disk.type : 'N/A';
         const disk = main_disk ? main_disk.name : 'N/A';
+        const disk_vendor = main_disk ? main_disk.vendor : 'N/A';
         return {
             res_code,
             disk_type,
-            disk
+            disk,
+            disk_vendor
         }
     }catch (error) {
         console.error('Error getting disk info', error);
     }
-}
+};
+
+export async function get_network_info() {
+    try {
+        const response = await fetch(base_url + '/server/system/network', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'API_KEY': api_key
+            }
+        });
+
+        if(!response.ok) {
+            throw new error(`Server responded with status ${response.status}`);
+        }
+        const raw_data = await response.json();
+        const res_code = response.status;
+        const main_interface = raw_data;
+        return {
+            main_interface,
+            res_code
+        }
+
+    }catch (error) {
+        console.error('Error getting network info', error);
+    }
+};
