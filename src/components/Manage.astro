@@ -85,10 +85,10 @@
         if(!data) return;
         const {
             res_code,
-            nginx_status
+            nginx_details
         } = data;
 
-        output_div_command.textContent = `Response Code: ${res_code}\nNginx Status: ${nginx_status}`;
+        output_div_command.textContent = `Response Code: ${res_code}\nNginx Details: ${nginx_details}`;
     });
     rest_nginx_btn.addEventListener('click', async () => {
         const data = await restart_nginx();
@@ -105,10 +105,10 @@
         if(!data) return;
         const {
             res_code,
-            jellyfin_status
+            jellyfin_details
         } = data;
 
-        output_div_command.textContent = `Response Code: ${res_code}\nJellyfin Status: ${jellyfin_status}`;
+        output_div_command.textContent = `Response Code: ${res_code}\nJellyfin Status: ${jellyfin_details}`;
     });
     rest_jell_btn.addEventListener('click', async () => {
         const data = await restart_jellyfin();
@@ -262,7 +262,7 @@
     }
     
     .server {
-        width: 400px;
+        width: auto;
         display: flex;
         flex-direction: column;
         gap: 16px;
@@ -322,7 +322,8 @@
         border: 1px solid var(--ws);
         padding: 8px;
         margin-top: 8px;
-        height: 100px;
+        height: auto;
+        max-height: 200px;
         overflow-y: auto;
         white-space: pre-wrap;
         font-family: monospace;

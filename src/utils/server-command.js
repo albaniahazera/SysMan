@@ -60,8 +60,8 @@ export async function get_nginx_status() {
         }
         const raw_data = await response.json();
         const res_code = await response.status;
-        const nginx_status = raw_data.nginx_status;
-        return {nginx_status, res_code};
+        const nginx_details = raw_data.details;
+        return {nginx_details, res_code};
     } catch (error) {
         console.error('Error getting Nginx status:', error);
     }
@@ -102,8 +102,8 @@ export async function get_jellyfin_status() {
         }
         const raw_data = await response.json();
         const res_code = await response.status;
-        const jellyfin_status = raw_data.jellyfin_status;
-        return {jellyfin_status, res_code};
+        const jellyfin_details = raw_data.details;
+        return {jellyfin_details, res_code};
     }catch (error) {
         console.error('Error getting jellyfin status', error);
     }
