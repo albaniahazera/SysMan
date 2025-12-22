@@ -4,7 +4,7 @@ const api_key = get_api_key();
 
 export async function get_server_os_info() {
     try {
-        const response = await fetch(base_url + '/server/system/os', {
+        const response = await fetch(base_url + '/server/systems/os', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -37,7 +37,7 @@ export async function get_server_os_info() {
 
 export async function get_server_status() {
     try {
-        const response = await fetch(base_url + '/server/system/status', {
+        const response = await fetch(base_url + '/server/systems/status', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -79,7 +79,7 @@ export async function get_server_status() {
 
 export async function get_cpu_info() {
     try {
-        const response = await fetch(base_url + '/server/system/cpu', {
+        const response = await fetch(base_url + '/server/systems/cpu', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -112,7 +112,7 @@ export async function get_cpu_info() {
 
 export async function get_disk_info() {
     try {
-        const response = await fetch(base_url + '/server/system/disk', {
+        const response = await fetch(base_url + '/server/systems/disk', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -142,7 +142,7 @@ export async function get_disk_info() {
 
 export async function get_network_info() {
     try {
-        const response = await fetch(base_url + '/server/system/network', {
+        const response = await fetch(base_url + '/server/systems/network', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

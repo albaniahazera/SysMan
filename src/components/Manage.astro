@@ -20,6 +20,8 @@
                     <button id="restart-nginx-btn">Restart Nginx</button>
                     <button id="stat-jellyfin-btn">Jellyfin status</button>
                     <button id="restart-jellyfin-btn">Restart Jellyfin</button>
+                    <button id="stat-cloudflared-btn">Cloudflared status</button>
+                    <button id="chk-nginx-log">Check nginx log file</button>
                 </div>
                 <div id="output-command">You can see the command output here...</div>
             </div>
@@ -40,8 +42,24 @@
 
 <script>
     import { get_base_url } from "../utils/api-base-url";
-    import { shutdown_server, restart_server, get_nginx_status, restart_nginx, get_jellyfin_status, restart_jellyfin } from "../utils/server-command";
-    import { get_server_os_info, get_server_status, get_cpu_info, get_disk_info, get_network_info } from '../utils/server-system';
+    import { 
+        shutdown_server, 
+        restart_server, 
+        get_nginx_status, 
+        restart_nginx, 
+        get_jellyfin_status, 
+        restart_jellyfin,
+        get_cloudflared_status ,
+        get_log_nginx,
+        read_log_nginx
+    } from "../utils/server-command";
+    import { 
+        get_server_os_info, 
+        get_server_status, 
+        get_cpu_info, 
+        get_disk_info, 
+        get_network_info 
+    } from '../utils/server-system';
 
     const ip_display = document.getElementById('ip-address-and-port') as HTMLParagraphElement;
     const shut_btn = document.getElementById('shutdown-btn') as HTMLButtonElement;
@@ -57,6 +75,8 @@
     const chk_cpu_btn = document.getElementById('chk-cpu') as HTMLButtonElement;
     const chk_disk_btn = document.getElementById('chk-disk') as HTMLButtonElement;
     const chk_net_btn = document.getElementById('chk-net') as HTMLButtonElement;
+    const stat_cloudflared_btn = document.getElementById('stat-cloudflared-btn') as HTMLButtonElement;
+    const chk_nginx_log_btn = document.getElementById('chk-nginx-log') as HTMLButtonElement;
 
     ip_display.textContent = get_base_url();
     
@@ -119,6 +139,42 @@
         } = data;
 
         output_div_command.textContent = `Response Code: ${res_code}\nJellyfin Message: ${message_restart_jellyfin}`;
+    });
+    stat_cloudflared_btn.addEventListener('click', async () => {
+        const data = await get_cloudflared_status();
+        if(!data) return;
+        const {
+            res_code,
+            cloudflared_details
+        } = data;
+
+        output_div_command.textContent = `Response Code: ${res_code}\nCloudflared Status: ${cloudflared_details}`;
+    });
+    chk_nginx_log_btn.addEventListener('click', async () => {
+        const data = await get_log_nginx();
+        if(!data) return;
+        const {
+            res_code,
+            list_file
+        } = data;
+
+        output_div_command.innerHTML = `Response Code: ${res_code}<br><div id="log-buttons-container"></div><div id="log-content-display"></div>`;
+    
+        const container = document.getElementById('log-buttons-container') as HTMLDivElement;
+
+        list_file.forEach((fileName: string | null) => {
+            const btn = document.createElement('button');
+            
+            btn.textContent = fileName;
+            btn.style = 'color: white; background: black; border: 1px solid cyan; margin: 2px; padding: 4px; cursor: pointer;';
+            btn.onclick = async () => {
+                const content = await read_log_nginx(fileName); 
+                const log_display = document.getElementById('log-content-display') as HTMLDivElement;
+                log_display.textContent = `\nReading File: ${fileName}\nLog: \n${content}`;
+            };
+
+            container.appendChild(btn);
+        });
     })
 
     

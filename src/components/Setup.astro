@@ -1,6 +1,6 @@
 <div>
 	<nav>
-		<h1>SysMan - Setup</h1>
+		<h1>SBM - Setup</h1>
 	</nav>
 	<main>
 		<div class="welcome-container">
@@ -46,7 +46,7 @@
 		localStorage.setItem('sysman_api_key', api_key_input);
 		console.log(`Stored: ${ip_input}:${port_input}`);
 
-		const api_url = `http://${ip_input}:${port_input}/server/system/os`
+		const api_url = `http://${ip_input}:${port_input}/server/systems/os`
 		const API_KEY = api_key_input;
 
 		try {
@@ -72,7 +72,7 @@
             	return;
 			}
 			alert("Connection successful!");
-			window.location.href = '/SysMan-Manage';
+			window.location.href = '/SBM-Manage';
 		}catch (error) {
 			alert("An error occurred while trying to connect to the API server.");
 			console.log("Fetch Error: ", error);
